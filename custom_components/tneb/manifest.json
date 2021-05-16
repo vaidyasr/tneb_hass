@@ -1,0 +1,10 @@
+{
+    "domain": "tneb",
+    "name": "TNEB Bill",
+    "documentation": "https://github.com/vaidyasr/tneb_hass",
+    "dependencies": [],
+    "codeowners": ["@vaidyasr"],
+    "requirements": [
+    ],
+    "version": "1.00.0"
+}
