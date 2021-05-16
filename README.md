@@ -9,4 +9,4 @@ Example configuration.yaml:
     consumerno: 1234567890 
     username: myusername
     password: mypassword
-    scan_interval: 86400```
+    scan_interval: 86400
