@@ -1,4 +1,4 @@
-A Home Assistant custom component to get your TNEB Bill Amount, Units consumed and Due Date information.
+# A Home Assistant custom component to get your TNEB Bill Amount, Units consumed and Due Date information.
 To get started put all the files from/custom_components/tneb/ here: <config directory>/custom_components/tneb/
 
 Example configuration.yaml:
