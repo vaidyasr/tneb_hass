@@ -4,7 +4,6 @@ configuration.yaml
 
 sensor:
   - platform: tneb
-    name: "My 1st onnection"
     consumerno: 1234567890
     username: xxyyzz123
     password: yourpassword
@@ -20,7 +19,6 @@ from homeassistant.util import Throttle
 from homeassistant.helpers.entity import Entity
 
 from homeassistant.const import (
-    CONF_NAME,
     CONF_PASSWORD,
     CONF_USERNAME,
     CONF_RESOURCES
@@ -30,24 +28,24 @@ _LOGGER = logging.getLogger(__name__)
 
 BASE_URL = "https://www.tnebnet.org"
 MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=3600)
-DEFAULT_NAME = "TNEB Consumer"
 
-SENSOR_PREFIX = 'tneb_'
+SENSOR_PREFIX = 'TNEB '
 SENSOR_TYPES = {
-    'consumerName': ['Consumer Name', 'mdi:account'],
-    'phase': ['Phase', 'mdi:numeric'],
-    'meterNumber': ['Meter Number', 'mdi:numeric'],
-    'readingDate': ['Reading Date',  'mdi:calender'],
-    'meterReading': ['Meter Reading',  'mdi:card-text-outline'],
-    'usedUnits': ['Used Units', 'mdi:counter'],
-    'ccCharges': ['CC Charges',  'mdi:cash-100'],
-    'otherCharges': ['Other Charges',  'mdi:cash-100'],
-    'billAmount': ['Bill Amount',  'mdi:cash-100'],
-    'totalAmount': ['Total Amount',  'mdi:cash-100'],
-    'dueDate': ['Due Date',  'mdi:calender'],
-    'billPaidAmount': ['Bill Paid Amount',  'mdi:cash-100'],
-    'receiptNumber': ['Receipt Number',  'mdi:numeric'],
-    'paymentDate': ['Payment Date', 'mdi:calender']
+    'consumerName': ['Consumer Name', '', 'mdi:account'],
+    'consumerNo': ['Consumer Number', '', 'mdi:numeric'],
+    'phase': ['Phase', '', 'mdi:numeric'],
+    'meterNumber': ['Meter Number', '', 'mdi:numeric'],
+    'readingDate': ['Reading Date',  '', 'mdi:calendar'],
+    'meterReading': ['Meter Reading',  'Units', 'mdi:card-text-outline'],
+    'usedUnits': ['Used Units', 'Units', 'mdi:counter'],
+    'ccCharges': ['CC Charges',  '₹', 'mdi:cash-100'],
+    'otherCharges': ['Other Charges',  '₹', 'mdi:cash-100'],
+    'billAmount': ['Bill Amount',  '₹', 'mdi:cash-100'],
+    'totalAmount': ['Total Amount',  '₹', 'mdi:cash-100'],
+    'dueDate': ['Due Date',  '', 'mdi:calendar'],
+    'billPaidAmount': ['Bill Paid Amount',  '₹', 'mdi:cash-100'],
+    'receiptNumber': ['Receipt Number',  '', 'mdi:numeric'],
+    'paymentDate': ['Payment Date', '', 'mdi:calendar']
 }
 
 CONF_CONSUMERNO = "consumerno"
@@ -55,7 +53,6 @@ CONF_CONSUMERNO = "consumerno"
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_CONSUMERNO): cv.string,
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_RESOURCES, default=[]):
@@ -181,7 +178,9 @@ class TNEBBillSensor(Entity):
         """Initialize the sensor."""
         self.data = data
         self.type = sensor_type
-        self._name = SENSOR_PREFIX + consumer_no + '_' +  sensor_type
+        self._name = SENSOR_PREFIX + consumer_no + ' ' +  SENSOR_TYPES[sensor_type][0]
+        self._unit = SENSOR_TYPES[sensor_type][1]
+        self._inferred_unit = None
         self._state = None
         self.update()
 
@@ -194,6 +193,18 @@ class TNEBBillSensor(Entity):
     def state(self):
         """Return the state of the sensor."""
         return self._state
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend, if any."""
+        return SENSOR_TYPES[self.type][2]
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        if not self._unit:
+            return self._inferred_unit
+        return self._unit
 
     def update(self):
         """Get the latest data and use it to update our sensor state."""
