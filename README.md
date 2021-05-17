@@ -5,7 +5,6 @@ Example configuration.yaml:
 
 ```sensor:
   - platform: tneb
-    name: "My 1st Connection"
     consumerno: 1234567890 
     username: myusername
     password: mypassword
